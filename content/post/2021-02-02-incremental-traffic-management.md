@@ -8,16 +8,13 @@ URL: "/2019/02/02/incremental-traffic-management/"
 publishdate: 2018-11-21
 subtitle:
 attribution: Sandeep Parikh
+translator: 李晶晶
+origin_url: https://istio.io/blog/2018/incremental-traffic-management/
 twitter: crcsmnky
 tags:
     - Istio
 categories: [ Tech ]
 ---
-> 作者：Sandeep Parikh
->
-> 翻译：李晶晶
->
-> 原文：https://istio.io/blog/2018/incremental-traffic-management/
 
 流量管理是 Istio 提供的重要优势之一。Istio 流量管理的核心是在将通信流量和基础设施的伸缩进行解耦。如果没有 Istio 这样的服务网格，这种流量控制方式是不可能实现的。
 
