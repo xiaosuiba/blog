@@ -18,11 +18,11 @@ categories: [ Tech ]
 
 流量管理是 Istio 提供的重要优势之一。Istio 流量管理的核心是在将通信流量和基础设施的伸缩进行解耦。如果没有 Istio 这样的服务网格，这种流量控制方式是不可能实现的。
 
-例如，您希望执行一次[金丝雀发布](https://martinfowler.com/bliki/CanaryRelease.html)。当使用 Istio 时，您可以指定 service 的 **v1** 版本接收 90% 的传入流量，而该 service **v2** 版本仅接收 10%。如果使用标准的 Kubernetes deployment，实现此目的的唯一方法是手动控制每个版本的可用 Pod 数量，例如使 9 个 Pod 运行 v1 版本，使 1 个 Pod 运行 v2 版本。这种类型的手动控制难以实现，并且随着时间的推移可能无法扩展。有关更多信息，请查看[使用 Istio 进行金丝雀发布](/zh/blog/2017/0.1-canary/)。
+例如，您希望执行一次[金丝雀发布](https://martinfowler.com/bliki/CanaryRelease.html)。当使用 Istio 时，您可以指定 service 的 **v1** 版本接收 90% 的传入流量，而该 service **v2** 版本仅接收 10%。如果使用标准的 Kubernetes deployment，实现此目的的唯一方法是手动控制每个版本的可用 Pod 数量，例如使 9 个 Pod 运行 v1 版本，使 1 个 Pod 运行 v2 版本。这种类型的手动控制难以实现，并且随着时间的推移可能无法扩展。有关更多信息，请查看[使用 Istio 进行金丝雀发布](https://istio.io/zh/blog/2017/0.1-canary/)。
 
 部署现有 service 的更新时存在同样的问题。虽然您可以使用 Kubernetes 更新 deployment，但它需要将 v1 Pod 替换为 v2 Pod。使用 Istio，您可以部署 service 的 v2 版本，并使用内置流量管理机制在网络层面将流量转移到更新后的 service，然后删除 v1 版本的 Pod。
 
-除了金丝雀发布和一般流量转移之外，Istio 还使您能够实现动态请求路由（基于 HTTP header）、故障恢复、重试、断路器和故障注入。有关更多信息，请查看[流量管理文档](/zh/docs/concepts/traffic-management/)。
+除了金丝雀发布和一般流量转移之外，Istio 还使您能够实现动态请求路由（基于 HTTP header）、故障恢复、重试、断路器和故障注入。有关更多信息，请查看[流量管理文档](https://istio.io/zh/docs/concepts/traffic-management/)。
 
 这篇文章介绍的技术重点突出了一种特别有用的方法，可以逐步实现 Istio（在这种情况下，只有流量管理功能），而无需单独更新每个 Pod。
 
@@ -46,15 +46,15 @@ Pod 包含一个 sidecar 代理，该代理作为 Istio 网格的一部分，负
 
 如果 service A 和 B 不是 Istio 网格的一部分，则没有 sidecar 代理知道如何将流量路由到 service B 的不同版本。在这种情况下，您需要使用另一种方法来使 service A 到 service B 的流量遵循您设置的 50/50 规则。
 
-幸运的是，标准的 Istio 部署已经包含了一个 [Gateway](/zh/docs/concepts/traffic-management/#gateway)，它专门处理 Istio 网格之外的入口流量。此 Gateway 用于允许通过外部负载均衡器进入的集群外部入口流量；或来自 Kubernetes 集群，但在服务网格之外的入口流量。网关可以进行配置，对没有 Sidecar 支持的入口流量进行代理，引导流量进入相应的 Pod。这种方法允许您利用 Istio 的流量管理功能，其代价是通过入口网关的流量将产生额外的跃点。
+幸运的是，标准的 Istio 部署已经包含了一个 [Gateway](https://istio.io/zh/docs/concepts/traffic-management/#gateway)，它专门处理 Istio 网格之外的入口流量。此 Gateway 用于允许通过外部负载均衡器进入的集群外部入口流量；或来自 Kubernetes 集群，但在服务网格之外的入口流量。网关可以进行配置，对没有 Sidecar 支持的入口流量进行代理，引导流量进入相应的 Pod。这种方法允许您利用 Istio 的流量管理功能，其代价是通过入口网关的流量将产生额外的跃点。
 
 {{< figure src="https://istio.io/blog/2018/incremental-traffic-management/fifty-fifty-ingress-gateway.png" caption="使用 Ingress Gateway 的 50/50 流量分割" >}}
 
 ## 实践：Istio 流量路由
 
-一种实践的简单方法是首先按照[平台设置](/zh/docs/setup/kubernetes/platform-setup/)说明设置 Kubernetes 环境，然后使用 [Helm](/zh/docs/setup/kubernetes/minimal-install/) 安装仅包含流量管理组件（ingress gateway、egress gateway、Pilot）的 Istio。下面的示例使用 [Google Kubernetes Engine](https://cloud.google.com/gke)。
+一种实践的简单方法是首先按照[平台设置](https://istio.io/zh/docs/setup/kubernetes/platform-setup/)说明设置 Kubernetes 环境，然后使用 [Helm](https://istio.io/zh/docs/setup/kubernetes/minimal-install/) 安装仅包含流量管理组件（ingress gateway、egress gateway、Pilot）的 Istio。下面的示例使用 [Google Kubernetes Engine](https://cloud.google.com/gke)。
 
-首先，**安装并配置 [GKE](/zh/docs/setup/kubernetes/platform-setup/gke/)**：
+首先，**安装并配置 [GKE](https://istio.io/zh/docs/setup/kubernetes/platform-setup/gke/)**：
 
 ```bash
 $ gcloud container clusters create istio-inc --zone us-central1-f
@@ -64,7 +64,7 @@ $ kubectl create clusterrolebinding cluster-admin-binding \
    --user=$(gcloud config get-value core/account)
 ```
 
-然后，**[安装 Helm](https://docs.helm.sh/using_helm/#installing-helm) 并[生成 Istio 最小配置安装](/zh/docs/setup/kubernetes/minimal-install/)** -- 只有流量管理组件：
+然后，**[安装 Helm](https://docs.helm.sh/using_helm/#installing-helm) 并[生成 Istio 最小配置安装](https://istio.io/zh/docs/setup/kubernetes/minimal-install/)** -- 只有流量管理组件：
 
 ```bash
 $ helm template install/kubernetes/helm/istio \
