@@ -29,9 +29,9 @@ home = ["HTML", "RSS", "Algolia"]
 
   # algolia site search
   algolia_search = true
-  algolia_appId = ""
-  algolia_indexName = ""
-  algolia_apiKey = ""
+  algolia_appId = "2PPN0AR1GY"
+  algolia_indexName = "xiaosuiba-blog"
+  algolia_apiKey = "df5c6696a3588d5f7042145f31fd1468"
 
   # Sidebar settings
   sidebar_about_description = "Software Developer, アニメマニア"
