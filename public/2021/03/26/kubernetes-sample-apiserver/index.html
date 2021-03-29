@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><head>
+    <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
+    <meta name="baidu-site-verification" content="LRrmH41lz7" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="ChrisLi&#39;s Blog">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://xiaosuiba.github.io/img/home-bg-natsume4.jpg">
+    <meta property="twitter:image" content="https://xiaosuiba.github.io/img/home-bg-natsume4.jpg" />
+    
+
+    
+    <meta name="title" content="Kubernetes sample-apiserver 代码阅读" />
+    <meta property="og:title" content="Kubernetes sample-apiserver 代码阅读" />
+    <meta property="twitter:title" content="Kubernetes sample-apiserver 代码阅读" />
+    
+
+    
+    <meta name="description" content="">
+    <meta property="og:description" content="" />
+    <meta property="twitter:description" content="" />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Kubernetes sample-apiserver 代码阅读-打雷不怕的博客 | ChrisLi Blog</title>
+
+    <link rel="canonical" href="/2021/03/26/kubernetes-sample-apiserver/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+	
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    
+    <script src="/js/jquery.min.js"></script>
+    
+    
+    <script src="/js/bootstrap.min.js"></script>
+    
+    
+    <script src="/js/hux-blog.min.js"></script>
+	
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+</head>
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ChrisLi&#39;s Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/tech">tech</a>
+                    </li>
+                    
+                    
+		    
+                        <li><a href="/top/about/">ABOUT</a></li>
+                    
+
+                    
+		    <li>
+                        <a href="/search">SEARCH <img src="/img/search.png" height="15" style="cursor: pointer;"></a>
+		    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('/img/home-bg-natsume4.jpg')
+    }
+</style>
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/kubernetes" title="kubernetes">
+                            kubernetes
+                        </a>
+                        
+                        <a class="tag" href="/tags/code" title="code">
+                            code
+                        </a>
+                        
+                    </div>
+                    <h1>Kubernetes sample-apiserver 代码阅读</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+			Posted by 
+			
+			    Chris Li
+			 
+			on 
+			Friday, March 26, 2021
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents"></nav>
+                
+                
+                
+                <h1 id="启动过程">启动过程</h1>
+<p>main.go:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">logs</span>.<span style="color:#a6e22e">InitLogs</span>()
+	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">logs</span>.<span style="color:#a6e22e">FlushLogs</span>()
+
+	<span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">genericapiserver</span>.<span style="color:#a6e22e">SetupSignalHandler</span>()
+	<span style="color:#a6e22e">options</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">server</span>.<span style="color:#a6e22e">NewWardleServerOptions</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stderr</span>)
+	<span style="color:#a6e22e">cmd</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">server</span>.<span style="color:#a6e22e">NewCommandStartWardleServer</span>(<span style="color:#a6e22e">options</span>, <span style="color:#a6e22e">stopCh</span>)
+	<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Flags</span>().<span style="color:#a6e22e">AddGoFlagSet</span>(<span style="color:#a6e22e">flag</span>.<span style="color:#a6e22e">CommandLine</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Execute</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+	}
+}
+</code></pre></div><p>options 调用 <code>server.NewWardleServerOption</code> 构建了一个 <code>WardleServerOptions</code> 配置对象</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">WardleServerOptions</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">RecommendedOptions</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">genericoptions</span>.<span style="color:#a6e22e">RecommendedOptions</span>
+
+	<span style="color:#a6e22e">SharedInformerFactory</span> <span style="color:#a6e22e">informers</span>.<span style="color:#a6e22e">SharedInformerFactory</span>
+	<span style="color:#a6e22e">StdOut</span>                <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Writer</span>
+	<span style="color:#a6e22e">StdErr</span>                <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Writer</span>
+}
+</code></pre></div><p><code>RecommendedOptions</code> 的解释为：</p>
+<blockquote>
+<p>// RecommendedOptions contains the recommended options for running an API server.</p>
+<p>// If you add something to this list, it should be in a logical grouping.</p>
+<p>// Each of them can be nil to leave the feature unconfigured on ApplyTo.</p>
+</blockquote>
+<p><code>server.NewCommandStartWardleServer</code> 中构建了一个 cobra.Command，代码很简短：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewCommandStartWardleServer</span>(<span style="color:#a6e22e">defaults</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">WardleServerOptions</span>, <span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) <span style="color:#f92672">*</span><span style="color:#a6e22e">cobra</span>.<span style="color:#a6e22e">Command</span> {
+	<span style="color:#a6e22e">o</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">defaults</span>
+	<span style="color:#a6e22e">cmd</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">cobra</span>.<span style="color:#a6e22e">Command</span>{
+		<span style="color:#a6e22e">Short</span>: <span style="color:#e6db74">&#34;Launch a wardle API server&#34;</span>,
+		<span style="color:#a6e22e">Long</span>:  <span style="color:#e6db74">&#34;Launch a wardle API server&#34;</span>,
+		<span style="color:#a6e22e">RunE</span>: <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">cobra</span>.<span style="color:#a6e22e">Command</span>, <span style="color:#a6e22e">args</span> []<span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">Complete</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+				<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+			}
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">Validate</span>(<span style="color:#a6e22e">args</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+				<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+			}
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">RunWardleServer</span>(<span style="color:#a6e22e">stopCh</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+				<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+			}
+			<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+		},
+	}
+
+	<span style="color:#a6e22e">flags</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Flags</span>()
+	<span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">RecommendedOptions</span>.<span style="color:#a6e22e">AddFlags</span>(<span style="color:#a6e22e">flags</span>)
+	<span style="color:#a6e22e">utilfeature</span>.<span style="color:#a6e22e">DefaultMutableFeatureGate</span>.<span style="color:#a6e22e">AddFlag</span>(<span style="color:#a6e22e">flags</span>)
+
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">cmd</span>
+}
+</code></pre></div><p>可以看到主要工作包括两部分，一个是使用flag填充o.RecommendedOption，这部分在调用时即完成；第而部分是配置cmd的启动RunE，主要有三个步骤：</p>
+<ul>
+<li>o.Complete(): 完成一些额外配置，如admission plugins</li>
+<li>o.Validate(args)：对配置进行校验，这里直接使用了默认校验（sample-apiserver没有额外的配置项）</li>
+<li>o.RunWardleServer(stopCh)：启动服务</li>
+</ul>
+<p>下面重点看下o.RunWardleServer，这是启动服务的核心部分：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#75715e">// RunWardleServer starts a new WardleServer given WardleServerOptions
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">o</span> <span style="color:#a6e22e">WardleServerOptions</span>) <span style="color:#a6e22e">RunWardleServer</span>(<span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) <span style="color:#66d9ef">error</span> {
+  <span style="color:#75715e">//从RecommendedOption产生最终config
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">config</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">Config</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+	}
+
+  <span style="color:#75715e">//对config进行补完并使用配置产生server
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">server</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">Complete</span>().<span style="color:#a6e22e">New</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+	}
+
+	<span style="color:#a6e22e">server</span>.<span style="color:#a6e22e">GenericAPIServer</span>.<span style="color:#a6e22e">AddPostStartHookOrDie</span>(<span style="color:#e6db74">&#34;start-sample-server-informers&#34;</span>, <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">context</span> <span style="color:#a6e22e">genericapiserver</span>.<span style="color:#a6e22e">PostStartHookContext</span>) <span style="color:#66d9ef">error</span> {
+		<span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">GenericConfig</span>.<span style="color:#a6e22e">SharedInformerFactory</span>.<span style="color:#a6e22e">Start</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">StopCh</span>)
+		<span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">SharedInformerFactory</span>.<span style="color:#a6e22e">Start</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">StopCh</span>)
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+	})
+
+  <span style="color:#75715e">//启动服务
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">server</span>.<span style="color:#a6e22e">GenericAPIServer</span>.<span style="color:#a6e22e">PrepareRun</span>().<span style="color:#a6e22e">Run</span>(<span style="color:#a6e22e">stopCh</span>)
+}
+</code></pre></div><p>o.Config()：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#75715e">// Config returns config for the api server given WardleServerOptions
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">o</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">WardleServerOptions</span>) <span style="color:#a6e22e">Config</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">apiserver</span>.<span style="color:#a6e22e">Config</span>, <span style="color:#66d9ef">error</span>) {
+  <span style="color:#960050;background-color:#1e0010">……</span>
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">RecommendedOptions</span>.<span style="color:#a6e22e">ApplyTo</span>(<span style="color:#a6e22e">serverConfig</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+	}
+
+	<span style="color:#a6e22e">config</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">apiserver</span>.<span style="color:#a6e22e">Config</span>{
+		<span style="color:#a6e22e">GenericConfig</span>: <span style="color:#a6e22e">serverConfig</span>,
+		<span style="color:#a6e22e">ExtraConfig</span>:   <span style="color:#a6e22e">apiserver</span>.<span style="color:#a6e22e">ExtraConfig</span>{},
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">config</span>, <span style="color:#66d9ef">nil</span>
+}
+</code></pre></div><p>从这里可以发现通常的apiserver.Config构建方式是通过RecommendedOptions与cobra.command协作构建出RecommendedOptions，然后使用RecommendedOptions.ApplyTo方法将配置填充到apiserver.Config中，用于启动最终的apiserver。</p>
+<p><code>server, err := config.Complete().New()</code>产生了最终的WardleServer：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">c</span> <span style="color:#a6e22e">completedConfig</span>) <span style="color:#a6e22e">New</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">WardleServer</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#a6e22e">genericServer</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">GenericConfig</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;sample-apiserver&#34;</span>, <span style="color:#a6e22e">genericapiserver</span>.<span style="color:#a6e22e">NewEmptyDelegate</span>())
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+	}
+
+	<span style="color:#a6e22e">s</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">WardleServer</span>{
+		<span style="color:#a6e22e">GenericAPIServer</span>: <span style="color:#a6e22e">genericServer</span>,
+	}
+
+	<span style="color:#a6e22e">apiGroupInfo</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">genericapiserver</span>.<span style="color:#a6e22e">NewDefaultAPIGroupInfo</span>(<span style="color:#a6e22e">wardle</span>.<span style="color:#a6e22e">GroupName</span>, <span style="color:#a6e22e">Scheme</span>, <span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">ParameterCodec</span>, <span style="color:#a6e22e">Codecs</span>)
+
+	<span style="color:#a6e22e">v1alpha1storage</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#a6e22e">rest</span>.<span style="color:#a6e22e">Storage</span>{}
+	<span style="color:#a6e22e">v1alpha1storage</span>[<span style="color:#e6db74">&#34;flunders&#34;</span>] = <span style="color:#a6e22e">wardleregistry</span>.<span style="color:#a6e22e">RESTInPeace</span>(<span style="color:#a6e22e">flunderstorage</span>.<span style="color:#a6e22e">NewREST</span>(<span style="color:#a6e22e">Scheme</span>, <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">GenericConfig</span>.<span style="color:#a6e22e">RESTOptionsGetter</span>))
+	<span style="color:#a6e22e">v1alpha1storage</span>[<span style="color:#e6db74">&#34;fischers&#34;</span>] = <span style="color:#a6e22e">wardleregistry</span>.<span style="color:#a6e22e">RESTInPeace</span>(<span style="color:#a6e22e">fischerstorage</span>.<span style="color:#a6e22e">NewREST</span>(<span style="color:#a6e22e">Scheme</span>, <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">GenericConfig</span>.<span style="color:#a6e22e">RESTOptionsGetter</span>))
+	<span style="color:#a6e22e">apiGroupInfo</span>.<span style="color:#a6e22e">VersionedResourcesStorageMap</span>[<span style="color:#e6db74">&#34;v1alpha1&#34;</span>] = <span style="color:#a6e22e">v1alpha1storage</span>
+
+	<span style="color:#a6e22e">v1beta1storage</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#a6e22e">rest</span>.<span style="color:#a6e22e">Storage</span>{}
+	<span style="color:#a6e22e">v1beta1storage</span>[<span style="color:#e6db74">&#34;flunders&#34;</span>] = <span style="color:#a6e22e">wardleregistry</span>.<span style="color:#a6e22e">RESTInPeace</span>(<span style="color:#a6e22e">flunderstorage</span>.<span style="color:#a6e22e">NewREST</span>(<span style="color:#a6e22e">Scheme</span>, <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">GenericConfig</span>.<span style="color:#a6e22e">RESTOptionsGetter</span>))
+	<span style="color:#a6e22e">apiGroupInfo</span>.<span style="color:#a6e22e">VersionedResourcesStorageMap</span>[<span style="color:#e6db74">&#34;v1beta1&#34;</span>] = <span style="color:#a6e22e">v1beta1storage</span>
+
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">GenericAPIServer</span>.<span style="color:#a6e22e">InstallAPIGroup</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">apiGroupInfo</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+	}
+
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">s</span>, <span style="color:#66d9ef">nil</span>
+}
+</code></pre></div><p>New做了两个重要工作：</p>
+<ul>
+<li>使用配置构建了genericServer</li>
+<li>为apiGroup配置了restStorage</li>
+</ul>
+<p>我们挑选flunderstorage.NewREST来看看如何构建一个默认的RESTStorage:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#75715e">// NewREST returns a RESTStorage object that will work against API services.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewREST</span>(<span style="color:#a6e22e">scheme</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">runtime</span>.<span style="color:#a6e22e">Scheme</span>, <span style="color:#a6e22e">optsGetter</span> <span style="color:#a6e22e">generic</span>.<span style="color:#a6e22e">RESTOptionsGetter</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">registry</span>.<span style="color:#a6e22e">REST</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#a6e22e">strategy</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewStrategy</span>(<span style="color:#a6e22e">scheme</span>)
+
+	<span style="color:#a6e22e">store</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">genericregistry</span>.<span style="color:#a6e22e">Store</span>{
+		<span style="color:#a6e22e">NewFunc</span>:                  <span style="color:#66d9ef">func</span>() <span style="color:#a6e22e">runtime</span>.<span style="color:#a6e22e">Object</span> { <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">wardle</span>.<span style="color:#a6e22e">Flunder</span>{} },
+		<span style="color:#a6e22e">NewListFunc</span>:              <span style="color:#66d9ef">func</span>() <span style="color:#a6e22e">runtime</span>.<span style="color:#a6e22e">Object</span> { <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">wardle</span>.<span style="color:#a6e22e">FlunderList</span>{} },
+		<span style="color:#a6e22e">PredicateFunc</span>:            <span style="color:#a6e22e">MatchFlunder</span>,
+		<span style="color:#a6e22e">DefaultQualifiedResource</span>: <span style="color:#a6e22e">wardle</span>.<span style="color:#a6e22e">Resource</span>(<span style="color:#e6db74">&#34;flunders&#34;</span>),
+
+		<span style="color:#a6e22e">CreateStrategy</span>: <span style="color:#a6e22e">strategy</span>,
+		<span style="color:#a6e22e">UpdateStrategy</span>: <span style="color:#a6e22e">strategy</span>,
+		<span style="color:#a6e22e">DeleteStrategy</span>: <span style="color:#a6e22e">strategy</span>,
+
+		<span style="color:#75715e">// TODO: define table converter that exposes more than name/creation timestamp
+</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">TableConvertor</span>: <span style="color:#a6e22e">rest</span>.<span style="color:#a6e22e">NewDefaultTableConvertor</span>(<span style="color:#a6e22e">wardle</span>.<span style="color:#a6e22e">Resource</span>(<span style="color:#e6db74">&#34;flunders&#34;</span>)),
+	}
+	<span style="color:#a6e22e">options</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">generic</span>.<span style="color:#a6e22e">StoreOptions</span>{<span style="color:#a6e22e">RESTOptions</span>: <span style="color:#a6e22e">optsGetter</span>, <span style="color:#a6e22e">AttrFunc</span>: <span style="color:#a6e22e">GetAttrs</span>}
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">store</span>.<span style="color:#a6e22e">CompleteWithOptions</span>(<span style="color:#a6e22e">options</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">registry</span>.<span style="color:#a6e22e">REST</span>{<span style="color:#a6e22e">store</span>}, <span style="color:#66d9ef">nil</span>
+}
+</code></pre></div><p>这里直接使用genericregistry.Store构建了RESTStorage，按照RESTStorage-&gt;RegistryStore-&gt;Storage.Interface的流程，我们再深入一下genericregistry.Store，可以看到，在函数中我们并没有配置任何的Storage.Interface（genericregistry.Store中的Storage属性），在store.CompleteWithOptions(options)中：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Storage</span>.<span style="color:#a6e22e">Storage</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Storage</span>.<span style="color:#a6e22e">Codec</span> = <span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">StorageConfig</span>.<span style="color:#a6e22e">Codec</span>
+		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+		<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Storage</span>.<span style="color:#a6e22e">Storage</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">DestroyFunc</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">Decorator</span>(
+			<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">StorageConfig</span>,
+			<span style="color:#a6e22e">prefix</span>,
+			<span style="color:#a6e22e">keyFunc</span>,
+			<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">NewFunc</span>,
+			<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">NewListFunc</span>,
+			<span style="color:#a6e22e">attrFunc</span>,
+			<span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">TriggerFunc</span>,
+			<span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">Indexers</span>,
+		)
+</code></pre></div><p>当Storage为nil时，使用Decorator模式构建了一个e.Storage.Storage。</p>
+<p>此外，在apiserver.go中还使用init函数，完成了schema的注册工作：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">init</span>() {
+	<span style="color:#a6e22e">install</span>.<span style="color:#a6e22e">Install</span>(<span style="color:#a6e22e">Scheme</span>)
+
+	<span style="color:#75715e">// we need to add the options to empty v1
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// TODO fix the server code to avoid this
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">AddToGroupVersion</span>(<span style="color:#a6e22e">Scheme</span>, <span style="color:#a6e22e">schema</span>.<span style="color:#a6e22e">GroupVersion</span>{<span style="color:#a6e22e">Version</span>: <span style="color:#e6db74">&#34;v1&#34;</span>})
+
+	<span style="color:#75715e">// TODO: keep the generic API server from wanting this
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">unversioned</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">schema</span>.<span style="color:#a6e22e">GroupVersion</span>{<span style="color:#a6e22e">Group</span>: <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">Version</span>: <span style="color:#e6db74">&#34;v1&#34;</span>}
+	<span style="color:#a6e22e">Scheme</span>.<span style="color:#a6e22e">AddUnversionedTypes</span>(<span style="color:#a6e22e">unversioned</span>,
+		<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">Status</span>{},
+		<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">APIVersions</span>{},
+		<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">APIGroupList</span>{},
+		<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">APIGroup</span>{},
+		<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">APIResourceList</span>{},
+	)
+}
+</code></pre></div><p>到此为止，apiserver的配置已经完成，接下来我们看看服务的启动:
+<code>server.GenericAPIServer.PrepareRun().Run(stopCh)</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#75715e">// PrepareRun does post API installation setup steps. It calls recursively the same function of the delegates.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GenericAPIServer</span>)  <span style="color:#a6e22e">PrepareRun</span>() <span style="color:#a6e22e">preparedGenericAPIServer</span> {
+	<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">delegationTarget</span>.<span style="color:#a6e22e">PrepareRun</span>()
+
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">openAPIConfig</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">OpenAPIVersionedService</span>, <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">StaticOpenAPISpec</span> = <span style="color:#a6e22e">routes</span>.<span style="color:#a6e22e">OpenAPI</span>{
+			<span style="color:#a6e22e">Config</span>: <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">openAPIConfig</span>,
+		}.<span style="color:#a6e22e">Install</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">Handler</span>.<span style="color:#a6e22e">GoRestfulContainer</span>, <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">Handler</span>.<span style="color:#a6e22e">NonGoRestfulMux</span>)
+	}
+
+	<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">installHealthz</span>()
+	<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">installLivez</span>()
+	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">addReadyzShutdownCheck</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">readinessStopCh</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;Failed to install readyz shutdown check %s&#34;</span>, <span style="color:#a6e22e">err</span>)
+	}
+	<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">installReadyz</span>()
+
+	<span style="color:#75715e">// Register audit backend preShutdownHook.
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">AuditBackend</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">AddPreShutdownHook</span>(<span style="color:#e6db74">&#34;audit-backend&#34;</span>, <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">error</span> {
+			<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">AuditBackend</span>.<span style="color:#a6e22e">Shutdown</span>()
+			<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+		})
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;Failed to add pre-shutdown hook for audit-backend %s&#34;</span>, <span style="color:#a6e22e">err</span>)
+		}
+	}
+
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">preparedGenericAPIServer</span>{<span style="color:#a6e22e">s</span>}
+}
+</code></pre></div><p>可以看到主要工作就是配置openAPI handler，安装Healthz、Livez、Readyz端点，接下来运行Run：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#75715e">// Run spawns the secure http server. It only returns if stopCh is closed
+</span><span style="color:#75715e">// or the secure port cannot be listened on initially.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#a6e22e">preparedGenericAPIServer</span>) <span style="color:#a6e22e">Run</span>(<span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) <span style="color:#66d9ef">error</span> {
+<span style="color:#f92672">...............</span>
+	<span style="color:#75715e">// close socket after delayed stopCh
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">stoppedCh</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">NonBlockingRun</span>(<span style="color:#a6e22e">delayedStopCh</span>)
+<span style="color:#f92672">...............</span>
+}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#a6e22e">preparedGenericAPIServer</span>) <span style="color:#a6e22e">NonBlockingRun</span>(<span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) (<span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}, <span style="color:#66d9ef">error</span>) {
+<span style="color:#f92672">...............</span>.
+	<span style="color:#75715e">// Use an internal stop channel to allow cleanup of the listeners on error.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">internalStopCh</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{})
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">stoppedCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">SecureServingInfo</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">Handler</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+		<span style="color:#a6e22e">stoppedCh</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">SecureServingInfo</span>.<span style="color:#a6e22e">Serve</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">Handler</span>, <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">ShutdownTimeout</span>, <span style="color:#a6e22e">internalStopCh</span>)
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+			close(<span style="color:#a6e22e">internalStopCh</span>)
+			close(<span style="color:#a6e22e">auditStopCh</span>)
+			<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+		}
+	}
+<span style="color:#f92672">...............</span>.
+}
+</code></pre></div><p>至此，APIServer启动完成。</p>
+
+
+                
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/02/02/happy-spring-festival/" data-toggle="tooltip" data-placement="top" title="Happy Spring Festival">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2021/03/26/why-only-new-in-rest-storage-interface/" data-toggle="tooltip" data-placement="top" title="Why rest.Storage interface have only one method">Next
+                            Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+<div id="disqus-comment"></div>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        <a href="/tags/code" title="code">
+                            code
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/kubernetes" title="kubernetes">
+                            kubernetes
+                        </a>
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href="" rel="alternate" type="application/rss+xml" title="ChrisLi&#39;s Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:xiaosuiba@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="/your%20wechat%20qr%20code%20image">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/xiaosuiba">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; ChrisLi&#39;s Blog , 2021
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ChrisLi&#39;s Blog</title>
+    <link>https://xiaosuiba.github.io/</link>
+    <description>Recent content on ChrisLi&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 29 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://xiaosuiba.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Why rest.Storage interface have only one method</title>
+      <link>https://xiaosuiba.github.io/2021/03/26/why-only-new-in-rest-storage-interface/</link>
+      <pubDate>Mon, 29 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://xiaosuiba.github.io/2021/03/26/why-only-new-in-rest-storage-interface/</guid>
+      <description>Why rest.Storage interface have only one method While reading Kubernetes source code, I found one question really bothered me for several days. The common interface of rest storage is defined in /vendor/k8s.io/apiserver/pkg/registry/rest/rest.go:
+type Storage interface { // New returns an empty object that can be used with Create and Update after request data has been put into it. 	// This object must be a pointer type for use with Codec.</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes sample-apiserver 代码阅读</title>
+      <link>https://xiaosuiba.github.io/2021/03/26/kubernetes-sample-apiserver/</link>
+      <pubDate>Fri, 26 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://xiaosuiba.github.io/2021/03/26/kubernetes-sample-apiserver/</guid>
+      <description>启动过程 main.go: func main() { logs.InitLogs() defer logs.FlushLogs() stopCh := genericapiserver.SetupSignalHandler() options := server.NewWardleServerOptions(os.Stdout, os.Stderr) cmd := server.NewCommandStartWardleServer(options, stopCh) cmd.Flags().AddGoFlagSet(flag.CommandLine) if err := cmd.Execute(); err != nil { klog.Fatal(err) } } options 调用 server.NewWardleServerOption 构建了一个 WardleServerOptions 配置对象 type WardleServerOptions struct { RecommendedOptions *genericoptions.RecommendedOptions SharedInformerFactory informers.SharedInformerFactory StdOut io.Writer StdErr io.Writer } RecommendedOptions 的解释为： // RecommendedOptions contains</description>
+    </item>
+    
+    <item>
+      <title>Happy Spring Festival</title>
+      <link>https://xiaosuiba.github.io/2019/02/02/happy-spring-festival/</link>
+      <pubDate>Sat, 02 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://xiaosuiba.github.io/2019/02/02/happy-spring-festival/</guid>
+      <description>Happy Spring Festival 赶在春节前把博客搬迁成 hugo 了 :) 祝大家春节快乐，来年大吉，Happy Spring Festival~</description>
+    </item>
+    
+    <item>
+      <title>Welcome to ChrisLi&#39;s Blog</title>
+      <link>https://xiaosuiba.github.io/2019/02/02/hello-world/</link>
+      <pubDate>Sat, 02 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://xiaosuiba.github.io/2019/02/02/hello-world/</guid>
+      <description> “Yeah It&amp;rsquo;s on. ”
+ Hello World! </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://xiaosuiba.github.io/search/placeholder/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://xiaosuiba.github.io/search/placeholder/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://xiaosuiba.github.io/top/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://xiaosuiba.github.io/top/about/</guid>
+      <description>Bio Chris Li(Li Jingjing) is a senior software developer engaged in cloud computing territory. He&amp;rsquo;s currently working as a pre-research engineer mainly focusing on cloud native related technologies, including kubernetes, istio, etc. He&amp;rsquo;s also an open source advocate who joined several opensouce communities and make contributions to kubernetes.io and istio.io.
+In his spare time, he loves music, anime and playing badminton. He has a beatiful wife and a cute boy.</description>
+    </item>
+    
+  </channel>
+</rss>

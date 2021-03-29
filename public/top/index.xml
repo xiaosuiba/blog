@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tops on ChrisLi&#39;s Blog</title>
+    <link>https://xiaosuiba.github.io/top/</link>
+    <description>Recent content in Tops on ChrisLi&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://xiaosuiba.github.io/top/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title></title>
+      <link>https://xiaosuiba.github.io/top/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://xiaosuiba.github.io/top/about/</guid>
+      <description>Bio Chris Li(Li Jingjing) is a senior software developer engaged in cloud computing territory. He&amp;rsquo;s currently working as a pre-research engineer mainly focusing on cloud native related technologies, including kubernetes, istio, etc. He&amp;rsquo;s also an open source advocate who joined several opensouce communities and make contributions to kubernetes.io and istio.io.
+In his spare time, he loves music, anime and playing badminton. He has a beatiful wife and a cute boy.</description>
+    </item>
+    
+  </channel>
+</rss>
