@@ -9,6 +9,7 @@ tags:
     - kubernetes
     - code
 categories: [ Tech ]
+showtoc: fa
 ---
 
 # 启动过程

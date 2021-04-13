@@ -1,6 +1,6 @@
-[submodule "public"]
-	path = public
-	url = git@github.com:xiaosuiba/xiaosuiba.github.io.git
 [submodule "themes/hugo-theme-cleanwhite-xiaosuiba"]
 	path = themes/hugo-theme-cleanwhite-xiaosuiba
 	url = https://github.com/xiaosuiba/hugo-theme-cleanwhite.git
+[submodule "public"]
+	path = public
+	url = https://github.com/xiaosuiba/xiaosuiba.github.io.git
