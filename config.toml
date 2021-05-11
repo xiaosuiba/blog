@@ -54,7 +54,7 @@ theme = "harbor"
   favicon = "favicon.ico"
 
   [params.logo]
-    url = "natsume.jpg"
+    url = "icon.png"
     width = 50
     height = 50
     alt = "Logo"

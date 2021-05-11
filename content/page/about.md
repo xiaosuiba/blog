@@ -11,7 +11,7 @@ He's currently working as a pre-research engineer mainly focusing on cloud nativ
 In his spare time, he loves music, anime and playing badminton. 
 He has a beatiful wife and a cute boy.
 
-![](/img/chrisli.jpg)
+![](/images/chrisli.jpg)
 
 ## Contact
 * Email: xiaosuiba@gmail.com
