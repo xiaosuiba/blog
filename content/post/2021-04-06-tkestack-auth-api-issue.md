@@ -1,10 +1,9 @@
 ---
 layout:     post 
 title:      "TKEStack v1.6.0 global集群中serviceaccount总是默认拥有所有权限"
-subtitle:   "Why serviceaccount in tkestack v1.6.0 has full access to all resources by default?"
+description:   "Why serviceaccount in tkestack v1.6.0 has full access to all resources by default?"
 date:       2021-04-06
 author:     "Chris Li"
-URL: "/2021/04/06/tkestack-auth-api-issue/"
 tags:
     - kubernetes
     - TKEStack
@@ -12,6 +11,8 @@ tags:
 categories: [ Tech ]
 showtoc: false
 ---
+本文从探索了TKEStack 1.6中global集群任何serviceaccount均具有cluster-admin权限原因。
+<!--more-->
 
 TKEStack v1.6.0已经发布了，没有包含重大更新，但是在使用过程中，我们发现了一个很神奇的现象：global集群中任何serviceaccount都能访问所有的集群资源。这点可以直接使用`kubectl auth can-i`得到验证：
 

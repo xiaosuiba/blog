@@ -1,10 +1,9 @@
 ---
 layout:     post 
 title:      "TKEStack组件不能访问registry域名问题"
-subtitle:   ""
+description:   ""
 date:       2021-03-31
 author:     "Chris Li"
-URL: "/2021/03/31/tkestack-registry-dns-issue/"
 tags:
     - kubernetes
     - code
@@ -12,6 +11,8 @@ tags:
 categories: [ Tech ]
 showtoc: false
 ---
+本文从探索了TKEStack 1.5版本中TKEStack组件不能访问registry域名的原因，并给出解决办法。
+<!--more-->
 
 TKEStack需要配置registry域名，默认为`default.registry.tke.com`，application组件将使用该域名解析到`tke-registry-api`服务（或者直接解析到gateway也可以）。
 

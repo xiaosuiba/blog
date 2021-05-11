@@ -1,15 +1,14 @@
 ---
 layout:     post 
 title:      "Kubernetes sample-apiserver 代码阅读"
-subtitle:   ""
+description:   ""
 date:       2021-03-26
 author:     "Chris Li"
-URL: "/2021/03/26/kubernetes-sample-apiserver/"
 tags:
     - kubernetes
     - code
 categories: [ Tech ]
-showtoc: fa
+showtoc: false
 ---
 
 # 启动过程

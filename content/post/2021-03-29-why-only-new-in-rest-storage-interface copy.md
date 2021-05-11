@@ -1,16 +1,17 @@
 ---
 layout:     post 
-title:      "Why rest.Storage interface have only one method"
-subtitle:   ""
+title:      "Why rest.Storage interface contains only one method"
+description:   ""
 date:       2021-03-29
 author:     "Chris Li"
-URL: "/2021/03/26/why-only-new-in-rest-storage-interface/"
 tags:
     - kubernetes
     - code
 categories: [ Tech ]
 showtoc: false
 ---
+rest.Storage interface contains only one method. This page show how could it utilize golang reflection to do the job.
+<!--more-->
 
 # Why rest.Storage interface have only one method
 

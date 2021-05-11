@@ -1,10 +1,8 @@
 ---
 layout:     post 
 title:      "TKEStack v1.6.0 1.19版本中pod告警策略失效问题分析"
-subtitle:   "Why pod alarm fails to work in v1.19 cluster in TKEStack v1.6.0?"
 date:       2021-04-13
 author:     "Chris Li"
-URL: "/2021/04/13/tkestack-monitor-controller-issue/"
 tags:
     - kubernetes
     - TKEStack
@@ -12,6 +10,8 @@ tags:
 categories: [ Tech ]
 showtoc: false
 ---
+本文从探索了TKEStack 1.6中部分告警失效的原因，并提出修复手段。
+<!--more-->
 
 日前在使用TKEStack v1.6.0的时候，发现针对工作负载的（也就是pod状态、重启次数）告警失效。我们进行了一定的分析，最终找到原因和Kubernetes 1.19以后版本中一个kubelet metrics名称修改有关。
 

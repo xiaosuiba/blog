@@ -3,7 +3,6 @@ layout:     post
 title:      "TKEStack中LocalIdentity如何利用generateName机制生成Name"
 date:       2021-05-10
 author:     "Chris Li"
-URL: "/2021/05/10/how-does-tkestack-localidentity-make-use-of-generatename/"
 tags:
     - kubernetes
     - TKEStack
@@ -11,6 +10,9 @@ tags:
 categories: [ Tech ]
 showtoc: false
 ---
+
+本文从发现TKEStack自动生成`localidentity`名称机制出发，稍微探索了kubernetes `generateName`的作用机理。
+<!--more-->
 
 日前在研究TKEStack用户机制中，发现创建LocalIdentiy时，并没有传入`metadata.name`，而最终系统会生成一个随机值，类似：
 ```
