@@ -13,7 +13,7 @@ push:
 
 .PHONY: release
 release:
-	bash ./deploy.sh	
+	sh ./deploy.sh	
 	
 debug:
 	hugo server -D
