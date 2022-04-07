@@ -16,4 +16,4 @@ release:
 	sh ./deploy.sh	
 	
 debug:
-	hugo server -D
+	hugo serve -D
